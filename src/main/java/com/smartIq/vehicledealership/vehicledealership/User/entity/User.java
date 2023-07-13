@@ -24,11 +24,15 @@ public class User extends BaseEntity {
     private String email;
     private String password;
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY
     )
+    @JoinColumn(name = "company_id",referencedColumnName = "id")
     private Company company;
 
+    public void setCompany(Company company){
+        this.company=company;
+        company.addUser(this);
 
+    }
 
 }
