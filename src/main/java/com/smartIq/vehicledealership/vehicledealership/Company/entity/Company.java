@@ -11,13 +11,14 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "company")
 @SuperBuilder
+@Entity
+@Table(name = "company")
 public class Company extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,8 +32,11 @@ public class Company extends BaseEntity {
             cascade = CascadeType.ALL
     )
     private Set<User> users;
+
     public void addUser( User user){
         this.users.add(user);
     }
+
+
 
 }

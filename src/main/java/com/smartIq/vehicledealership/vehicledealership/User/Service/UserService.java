@@ -29,6 +29,7 @@ public class UserService {
     }
 
     public User createUser(SaveUserRequest saveUserRequest) {
+
         User user = new User();
         SaveUserRequestToUserMapper.toEntity(saveUserRequest,user);
         if (saveUserRequest.getCompany()!=null) {
@@ -38,8 +39,8 @@ public class UserService {
         return userRepository.save(user);
     }
 //TODO: dfs
-    public Boolean deleteOneUserById(Long id) {
-         return userRepository.deleteById(id)==1 ? true : false ;
+    public void deleteOneUserById(Long id) {
+          userRepository.deleteById(id);
     }
 
    public User updateUserById(Long id, UpdateUserRequest updateUserRequest) {

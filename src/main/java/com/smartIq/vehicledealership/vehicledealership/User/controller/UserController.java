@@ -23,7 +23,7 @@ public class UserController {
 
     private final UserService userService;
 
-    // TODO : In UserController, POST(save), GET(gelAll, getUserById), PUT(update), DELETE(delete) methods.
+
 
     @PostMapping
     public ResponseEntity<?> saveUser(@RequestBody SaveUserRequest saveUserRequest) {
@@ -57,10 +57,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(
+    public void deleteUser(
             @PathVariable("id") Long id
     ) {
-        return ResponseEntity.ok(userService.deleteOneUserById(id)) ;
+        userService.deleteOneUserById(id) ;
     }
 
 

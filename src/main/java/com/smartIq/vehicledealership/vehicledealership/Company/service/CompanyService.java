@@ -29,7 +29,7 @@ public class CompanyService {
     }
 
     public Company getOneCompanyById(Long id) {
-        return companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company not found"+ id));
+        return companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company not found:"+ id));
     }
     public Company createCompany(SaveCompanyRequest saveCompanyRequest){
         Company company = SaveCompanyRequestToCompany.toCompany(saveCompanyRequest);

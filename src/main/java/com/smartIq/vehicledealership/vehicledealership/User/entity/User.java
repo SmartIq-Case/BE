@@ -1,6 +1,7 @@
 package com.smartIq.vehicledealership.vehicledealership.User.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.smartIq.vehicledealership.vehicledealership.Company.entity.Company;
 import com.smartIq.vehicledealership.vehicledealership.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -23,16 +24,20 @@ public class User extends BaseEntity {
     private String lastName;
     private String email;
     private String password;
+
     @ManyToOne(
             fetch = FetchType.LAZY
     )
     @JoinColumn(name = "company_id",referencedColumnName = "id")
     private Company company;
 
-    public void setCompany(Company company){
+  public void setCompany(Company company){
         this.company=company;
-        company.addUser(this);
+
+           // company.addUser(this);
+
 
     }
+
 
 }
