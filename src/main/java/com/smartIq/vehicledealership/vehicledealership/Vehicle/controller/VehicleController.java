@@ -41,6 +41,7 @@ public class VehicleController {
         return ResponseEntity.ok(vehicle);
 
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateVehicle(@PathVariable Long id,@RequestBody UpdateVehicleRequest updateVehicleRequest){
         UpdateVehicleResponse updateVehicleResponse= VehicleToUpdateVehicleResponseMapper.toDto(vehicleService.updateOneVehicle(id,updateVehicleRequest));

@@ -11,6 +11,7 @@ import com.smartIq.vehicledealership.vehicledealership.User.payload.response.Get
 import com.smartIq.vehicledealership.vehicledealership.User.payload.response.SaveUserResponse;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UpdateUserResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,9 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody SaveUserRequest saveUserRequest) {
+    public ResponseEntity<?> saveUser(
+            @RequestBody SaveUserRequest saveUserRequest
+    ) {
         SaveUserResponse saveUserResponse = UserToSaveUserResponseMapper.toDto(userService.createUser(saveUserRequest));
         return ResponseEntity.ok(saveUserResponse);
     }
@@ -42,7 +45,9 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllUsers(
+
+    ) {
         List<GetUserResponse> getUserResponse = UserListToUserListResponseMapper.toDto(userService.getAllUsers());
         return ResponseEntity.ok(getUserResponse);
     }

@@ -16,19 +16,24 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class VehicleService {
+
     private final VehicleRepository vehicleRepository;
     private final CompanyService companyService;
 
     public List<Vehicle> getAllVehicle() {
+
         return vehicleRepository.findAll();
     }
 
     public Vehicle getOneVehicleById(Long id) {
-        return vehicleRepository.findById(id).orElseThrow(() -> new RuntimeException("Vehicle cant found By given id:" + id));
+
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle cant found By given id:" + id));
 
     }
 
     public Vehicle createVehicle(SaveVehicleRequest saveVehicleRequest) {
+
         Vehicle vehicle = new Vehicle();
         SaveVehicleRequestToVehicleMapper.toDto(saveVehicleRequest, vehicle);
         vehicle.setCompany(companyService.getOneCompanyById(saveVehicleRequest.getCompany()));
@@ -39,7 +44,9 @@ public class VehicleService {
     }
 
     public Vehicle updateOneVehicle(Long id, UpdateVehicleRequest updateVehicleRequest) {
-        Vehicle vehicle = vehicleRepository.findById(id).orElseThrow(() -> new RuntimeException("Cant find vehicle by Given id:" + id));
+
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cant find vehicle by Given id:" + id));
         VehicleUpdateRequestToVehicle.toDto(vehicle, updateVehicleRequest);
         vehicle.setCompany(companyService.getOneCompanyById(updateVehicleRequest.getCompany()));
         return vehicleRepository.save(vehicle);
@@ -48,6 +55,7 @@ public class VehicleService {
     }
 
     public void deleteVehicle(Long id) {
+
         vehicleRepository.deleteById(id);
     }
 }

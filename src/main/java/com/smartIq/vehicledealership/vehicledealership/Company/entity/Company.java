@@ -25,16 +25,24 @@ public class Company extends BaseEntity {
 
     @Column(name = "title")
     private String title;
+
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @OneToMany(
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
     private Set<User> users;
 
+    /**
+     * Making them related.
+     *
+     * @param user
+     */
     public void addUser( User user){
         this.users.add(user);
+        user.setCompany(this);
     }
 
 

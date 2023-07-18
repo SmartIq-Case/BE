@@ -24,6 +24,7 @@ public class User extends BaseEntity {
     private String lastName;
     private String email;
     private String password;
+    private Role role;
 
     @ManyToOne(
             fetch = FetchType.LAZY
@@ -31,13 +32,13 @@ public class User extends BaseEntity {
     @JoinColumn(name = "company_id",referencedColumnName = "id")
     private Company company;
 
-  public void setCompany(Company company){
-        this.company=company;
 
-           // company.addUser(this);
+    @OneToOne(
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "token_id")
+    private Token token;
 
-
-    }
 
 
 }
