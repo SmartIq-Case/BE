@@ -1,6 +1,7 @@
 package com.smartIq.vehicledealership.vehicledealership.User.controller;
 
 import com.smartIq.vehicledealership.vehicledealership.User.Service.UserAuthService;
+import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserAuthenticateRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserRegisterRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
 import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserAuthMapper;
@@ -32,10 +33,25 @@ public class UserAuthController {
     public ResponseEntity<?> register(
             @RequestBody UserRegisterRequest request
     ) {
-        User user = userAuthService.register(request);
-        UserRegisteredResponse response = UserAuthMapper.entityToResponse(user);
+
+        UserRegisteredResponse response = UserAuthMapper.entityToResponse(userAuthService.register(request));
 
         return ResponseEntity.ok(response);
+
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticate(
+            @RequestBody UserAuthenticateRequest request
+            ){
+       return ResponseEntity.ok(userAuthService.authenticate(request)) ;
+
+    }
+    @PostMapping("/logout")
+    public void logout(@RequestBody UserAuthenticateRequest request){
+
+        userAuthService.logout(request);
+
 
     }
 
