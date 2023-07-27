@@ -40,6 +40,7 @@ public class CompanyController{
         }
          */
         List<Company> companies=companyService.getAllCompany();
+
         return ResponseEntity.ok(CompanyListToCompanyResponseMapper.toDto(companies));
 
     }
