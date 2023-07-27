@@ -19,6 +19,4 @@ public class UserRegisterRequest {
     private String lastName;
     private String email;
     private String password;
-
-    private Role role;
 }

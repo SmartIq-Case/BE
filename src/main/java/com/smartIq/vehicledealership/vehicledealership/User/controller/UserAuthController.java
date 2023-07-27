@@ -3,8 +3,7 @@ package com.smartIq.vehicledealership.vehicledealership.User.controller;
 import com.smartIq.vehicledealership.vehicledealership.User.Service.UserAuthService;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserAuthenticateRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserRegisterRequest;
-import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
-import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserAuthMapper;
+import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserMapper;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserRegisteredResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +24,19 @@ public class UserAuthController {
 
     private final UserAuthService userAuthService;
 
-    // TODO : register endpoint.
-    // TODO : authenticate endpoint.
-    // TODO : logout endpoint.
 
+    /**
+     * Bir kullanıcının sisteme kayıt olduğu endpoint.
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody UserRegisterRequest request
     ) {
 
-        UserRegisteredResponse response = UserAuthMapper.entityToResponse(userAuthService.register(request));
+        UserRegisteredResponse response = UserMapper.entityToResponse(userAuthService.register(request));
 
         return ResponseEntity.ok(response);
 

@@ -1,9 +1,12 @@
 package com.smartIq.vehicledealership.vehicledealership.User.Service;
 
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.SubUserCreateRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.Repository.TokenRepository;
 import com.smartIq.vehicledealership.vehicledealership.User.Repository.UserRepository;
+import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.Token;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
+import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserMapper;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserAuthenticateRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserRegisterRequest;
 import com.smartIq.vehicledealership.vehicledealership.common.util.PasswordEncoder;
@@ -24,6 +27,14 @@ public class UserAuthService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
 
+    /**
+     * Bir kullanıcının sisteme kayıt olduğu metoddur. Varsayılan olarak kullanıcılara başlangışta USER rolü verilir.
+     * Kullanıcı ilerleyen süreçte bir şirket oluşturursa rolü COMPANY_OWNER olarak güncellenecek ve o Company ile ilişkilendirilecek.
+     *
+     *
+     * @param request
+     * @return
+     */
     public User register(
         UserRegisterRequest request
     ){
@@ -32,24 +43,29 @@ public class UserAuthService {
             throw new RuntimeException("email is already exist"+ request.getEmail());
         }
 
+        User userEntityToBeSave = UserMapper.mapForSaving(request,passwordEncoder);
 
-        User user = new User();
+        return userRepository.save(userEntityToBeSave);
+    }
 
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+    /**
+     * Şirketlere ait alt kullanıcıların tanımlandığı metoddur.
+     *
+     * @param request
+     * @return
+     */
+    public User createSubUser(
+            SubUserCreateRequest request,
+            User creatorUser
+    ){
+        if (userRepository.existsByEmail(request.getEmail())){
+            throw new RuntimeException("email is already exist"+ request.getEmail());
+        }
 
-        Token token = new Token();
-        token.setToken(TokenGenerator.generateToken());
+        User userEntityToBeSave = UserMapper.mapForSaving(request,passwordEncoder,creatorUser);
 
-        token = tokenRepository.save(token);
+        return userRepository.save(userEntityToBeSave);
 
-
-        user.setToken(token);
-
-        return userRepository.save(user);
     }
 
     /**
@@ -69,12 +85,12 @@ public class UserAuthService {
 
         expireOldTokens(user);
 
-        Token token = new Token();
-        token.setToken(TokenGenerator.generateToken());
+        Token tokenEntityToBeSave = new Token();
+        tokenEntityToBeSave.setTokenCode(TokenGenerator.generateToken());
 
-        token = tokenRepository.save(token);
+        final Token savedTokenEntity = tokenRepository.save(tokenEntityToBeSave);
 
-        user.setToken(token);
+        user.setToken(savedTokenEntity);
 
         return userRepository.save(user);
     }

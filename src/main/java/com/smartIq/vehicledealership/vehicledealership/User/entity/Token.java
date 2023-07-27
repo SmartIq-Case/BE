@@ -20,9 +20,10 @@ public class Token extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String token;
+    private String tokenCode;
 
-    private final static LocalDateTime expiration = LocalDateTime.now().plusHours(8);
+    @Builder.Default
+    private LocalDateTime expiration = LocalDateTime.now().plusHours(8);
 
     @OneToOne(
             mappedBy = "token",

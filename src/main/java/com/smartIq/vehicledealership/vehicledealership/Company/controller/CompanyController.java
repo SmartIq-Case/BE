@@ -6,12 +6,11 @@ import com.smartIq.vehicledealership.vehicledealership.Company.mapper.CompanyToC
 import com.smartIq.vehicledealership.vehicledealership.Company.mapper.CompanyToUpdateCompanyResponseMapper;
 import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.SaveCompanyRequest;
 import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.UpdateCompanyRequest;
-import com.smartIq.vehicledealership.vehicledealership.Company.payload.response.GetCompaniesResponse;
 import com.smartIq.vehicledealership.vehicledealership.Company.payload.response.GetCompanyResponse;
 import com.smartIq.vehicledealership.vehicledealership.Company.service.CompanyService;
-import com.smartIq.vehicledealership.vehicledealership.User.Repository.TokenRepository;
-import com.smartIq.vehicledealership.vehicledealership.User.entity.Token;
+import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
+import com.smartIq.vehicledealership.vehicledealership.common.authorizationChecker.AuthorizationChecker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,63 +19,84 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/company")
-public class CompanyController{
+@RequestMapping("/api/v1/companies")
+public class CompanyController {
 
     private final CompanyService companyService;
-    private final TokenRepository tokenRepository;
+    private final AuthorizationChecker authorizationChecker;
 
 
-    @GetMapping
-    public ResponseEntity<GetCompaniesResponse> getAllCompany(
-        //@RequestHeader("token") String token
-    )
-    {
-        /*
-        Token token = tokenRepository.findByToken(token);
-        User user = token.getUser();
-        if(user.getRole() == ADMIN ){
+    /**
+     * @param tokenCode
+     * @param saveCompanyRequest
+     * @return
+     */
+    @PostMapping
+    public ResponseEntity<?> createCompany(
+            @RequestHeader("token") String tokenCode,
+            @RequestBody SaveCompanyRequest saveCompanyRequest
+    ) {
+        User user = authorizationChecker.authorize(tokenCode, Role.USER);
+        final Company company = companyService.createCompany(saveCompanyRequest, user);
 
-        }
-         */
-        List<Company> companies=companyService.getAllCompany();
-
-        return ResponseEntity.ok(CompanyListToCompanyResponseMapper.toDto(companies));
+        return ResponseEntity.ok(CompanyToCompanySavedResponseMapper.toDto(company));
 
     }
 
 
+    @GetMapping
+    public ResponseEntity<List<GetCompanyResponse>> getAllCompany(
+            @RequestHeader("token") String tokenCode
+    ) {
+
+        authorizationChecker.authorize(tokenCode, Role.ADMIN);
+
+        final List<Company> allCompaniesFromDb = companyService.getAllCompany();
+        final List<GetCompanyResponse> companyGetResponses = CompanyListToCompanyResponseMapper
+                .toGetCompanyResponse(allCompaniesFromDb);
+
+        return ResponseEntity.ok(companyGetResponses);
+
+    }
+
+
+    /**
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public ResponseEntity<GetCompanyResponse> getCompanyById(
-            @PathVariable Long id
-    ){
-        Company company=companyService.getOneCompanyById(id);
-        GetCompanyResponse getCompanyResponse= CompanyToCompanySavedResponseMapper.toDto(company);
+            @PathVariable Long id,
+            @RequestHeader("token") String tokenCode
+    ) {
+        authorizationChecker.authorize(tokenCode, Role.ADMIN, Role.USER, Role.COMPANY_OWNER);
+        final Company company = companyService.getOneCompanyById(id);
+        final GetCompanyResponse getCompanyResponse = CompanyToCompanySavedResponseMapper.toDto(company);
         return ResponseEntity.ok(getCompanyResponse);
 
 
     }
 
 
-    @PostMapping
-    public ResponseEntity<?> createCompany(
-            @RequestBody SaveCompanyRequest saveCompanyRequest
-    ){
-       Company company= companyService.createCompany(saveCompanyRequest);
-       return ResponseEntity.ok(CompanyToCompanySavedResponseMapper.toDto(company));
-
-    }
-
-
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody UpdateCompanyRequest updateCompanyRequest){
-       Company company= companyService.updateCompanyById(id,updateCompanyRequest);
+    public ResponseEntity<?> updateCompany(
+            @PathVariable Long id,
+            @RequestBody UpdateCompanyRequest updateCompanyRequest,
+            @RequestHeader("token") String tokenCode
+    ) {
+        authorizationChecker.authorize(tokenCode,Role.ADMIN,Role.COMPANY_OWNER);
+        Company company = companyService.updateCompanyById(id, updateCompanyRequest);
         return ResponseEntity.ok(CompanyToUpdateCompanyResponseMapper.toDto(company));
     }
 
 
     @DeleteMapping("/{id}")
-    public void deleteCompanyByid(@PathVariable Long id){
+
+    public void deleteCompanyByid(
+            @PathVariable Long id,
+            @RequestHeader("token") String tokenCode
+    ) {
+        authorizationChecker.authorize(tokenCode,Role.ADMIN,Role.COMPANY_OWNER);
         companyService.deleteCompanyById(id);
 
     }

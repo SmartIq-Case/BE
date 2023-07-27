@@ -24,6 +24,8 @@ public class User extends BaseEntity {
     private String lastName;
     private String email;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @ManyToOne(
@@ -34,7 +36,10 @@ public class User extends BaseEntity {
 
 
     @OneToOne(
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST
+            }
     )
     @JoinColumn(name = "token_id")
     private Token token;
