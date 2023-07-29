@@ -46,9 +46,10 @@ public class UserAuthController {
     public ResponseEntity<?> authenticate(
             @RequestBody UserAuthenticateRequest request
             ){
-       return ResponseEntity.ok(userAuthService.authenticate(request)) ;
+       return ResponseEntity.ok(userAuthService.authenticate(request));
 
     }
+
     @PostMapping("/logout")
     public void logout(@RequestBody UserAuthenticateRequest request){
 

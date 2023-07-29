@@ -1,7 +1,7 @@
 package com.smartIq.vehicledealership.vehicledealership.Company.mapper;
 
 import com.smartIq.vehicledealership.vehicledealership.Company.entity.Company;
-import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.SaveCompanyRequest;
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.CompanySaveRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
 import com.smartIq.vehicledealership.vehicledealership.common.entity.enums.Status;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class SaveCompanyRequestToCompany {
 
     public static Company toCompany(
-            SaveCompanyRequest saveCompanyRequest,
+            CompanySaveRequest saveCompanyRequest,
             User user
     ){
         return Company.builder()

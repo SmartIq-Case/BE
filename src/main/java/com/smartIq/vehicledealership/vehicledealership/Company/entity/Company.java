@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -30,10 +30,10 @@ public class Company extends BaseEntity {
     private Status status;
 
     @OneToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            mappedBy = "company",
+            fetch = FetchType.LAZY
     )
-    private Set<User> users;
+    private List<User> users;
 
     /**
      * Making them related.

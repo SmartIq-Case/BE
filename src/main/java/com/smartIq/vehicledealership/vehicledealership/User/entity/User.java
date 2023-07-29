@@ -17,6 +17,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "users")
 @Data
 public class User extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +34,6 @@ public class User extends BaseEntity {
     )
     @JoinColumn(name = "company_id",referencedColumnName = "id")
     private Company company;
-
 
     @OneToOne(
             fetch = FetchType.LAZY,

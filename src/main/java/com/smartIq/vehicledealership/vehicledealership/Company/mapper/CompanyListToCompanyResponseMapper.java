@@ -1,7 +1,7 @@
 package com.smartIq.vehicledealership.vehicledealership.Company.mapper;
 
 import com.smartIq.vehicledealership.vehicledealership.Company.entity.Company;
-import com.smartIq.vehicledealership.vehicledealership.Company.payload.response.GetCompanyResponse;
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.response.CompanyGetResponse;
 
 import java.util.List;
 
@@ -9,16 +9,16 @@ import java.util.List;
 public class CompanyListToCompanyResponseMapper {
 
 
-    public static GetCompanyResponse toGetCompanyResponse(
+    public static CompanyGetResponse toGetCompanyResponse(
             Company company
     ) {
-        return GetCompanyResponse.builder()
+        return CompanyGetResponse.builder()
                 .title(company.getTitle())
                 .build();
     }
 
 
-    public static List<GetCompanyResponse> toGetCompanyResponse(
+    public static List<CompanyGetResponse> toGetCompanyResponse(
             List<Company> companies
     ){
         if(companies == null){

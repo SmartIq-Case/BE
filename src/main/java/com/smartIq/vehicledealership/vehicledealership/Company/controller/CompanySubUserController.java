@@ -1,6 +1,9 @@
 package com.smartIq.vehicledealership.vehicledealership.Company.controller;
 
+import com.smartIq.vehicledealership.vehicledealership.Company.mapper.CompanySubUserMapper;
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.CompanySubUserUpdateRequest;
 import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.SubUserCreateRequest;
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.response.CompanySubUserGetResponse;
 import com.smartIq.vehicledealership.vehicledealership.Company.service.CompanySubUserService;
 import com.smartIq.vehicledealership.vehicledealership.User.Service.UserAuthService;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
@@ -13,11 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Bir şirketin yönetimini yapabilen alt kullanıcıların tanımlandığı rest controller sınıfıdır..
  */
 @RestController
-@RequestMapping("/api/v1/companies/subusers")
+@RequestMapping("/api/v1/companies/sub-users")
 @RequiredArgsConstructor
 public class CompanySubUserController {
 
@@ -26,6 +31,7 @@ public class CompanySubUserController {
     private final UserAuthService userAuthService;
 
     // TODO : Yeni bir subUser'in oluşturulduğu endpoint.
+
 
     /**
      * Şirket sahibi bir kullanıcının şirketine alt kullanıcı eklediği endpointtir.
@@ -47,6 +53,75 @@ public class CompanySubUserController {
 
         return ResponseEntity.ok(registeredSubUserResponse);
     }
+
+
+    /**
+     * İsteği yapan Company_OWNER yetkisine sahip kullanıcının hesabına bağlı tüm alt kullanıcıları döndüren endpoint.
+     *
+     * @param tokenCode
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<List<CompanySubUserGetResponse>> getAllSubUsers(
+            @RequestHeader("token") String tokenCode
+
+    ){
+        final User requestOwner =authorizationChecker.authorize(tokenCode, Role.COMPANY_OWNER);
+
+        final List<User> subUsers = companySubUserService.getAllSubUsers(requestOwner);
+
+        final List<CompanySubUserGetResponse> response = CompanySubUserMapper
+                .toSubUserGetResponse(subUsers);
+
+        return ResponseEntity.ok(response);
+
+    }
+
+    /**
+     * ID Değeri belirtilen SubUser'e erişim için kullanılan endpoint.
+     *
+     */
+    @GetMapping("/{subUserId}")
+    public ResponseEntity<CompanySubUserGetResponse> getSubUserById(
+        @RequestHeader("token") String tokenCode,
+        @PathVariable("subUserId") Long subUserId
+    ){
+        final User requestOwner = authorizationChecker.authorize(tokenCode,Role.COMPANY_OWNER);
+
+        final User subUser = companySubUserService.getSubUserById(requestOwner,subUserId);
+        final CompanySubUserGetResponse response = CompanySubUserMapper
+            .toSubUserGetResponse(subUser);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PutMapping("/{subUserId}")
+    public ResponseEntity<CompanySubUserGetResponse> updateSubUserById(
+            @RequestHeader("token") String tokenCode,
+            @RequestBody CompanySubUserUpdateRequest request,
+            @PathVariable("subUserId") Long subUserId
+    ){
+        final User requestOwner = authorizationChecker.authorize(tokenCode,Role.COMPANY_OWNER);
+
+        final User updatedSubUser = companySubUserService.updateSubUserById(requestOwner,subUserId,request);
+        final CompanySubUserGetResponse response = CompanySubUserMapper.toSubUserGetResponse(updatedSubUser);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{subUserId}")
+    public ResponseEntity<Void> deleteSubUserById(
+            @RequestHeader("token") String tokenCode,
+            @PathVariable("subUserId") Long subUserId
+    ){
+        final User requestOwner = authorizationChecker.authorize(tokenCode,Role.COMPANY_OWNER);
+
+        companySubUserService.deleteSubUserById(subUserId,requestOwner);
+
+        return ResponseEntity.ok(null);
+    }
+
 
 
 }

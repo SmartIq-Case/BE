@@ -1,19 +1,15 @@
 package com.smartIq.vehicledealership.vehicledealership.Company.service;
 
 import com.smartIq.vehicledealership.vehicledealership.Company.entity.Company;
-import com.smartIq.vehicledealership.vehicledealership.Company.mapper.SaveCompanyRequestToCompany;
-import com.smartIq.vehicledealership.vehicledealership.Company.mapper.UpdateCompanyRequestToCompany;
-import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.SaveCompanyRequest;
-import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.UpdateCompanyRequest;
+import com.smartIq.vehicledealership.vehicledealership.Company.mapper.CompanyMapper;
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.CompanySaveRequest;
+import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.CompanyUpdateRequest;
 import com.smartIq.vehicledealership.vehicledealership.Company.repository.CompanyRepository;
 import com.smartIq.vehicledealership.vehicledealership.User.Repository.UserRepository;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
-import com.smartIq.vehicledealership.vehicledealership.common.entity.enums.Status;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,19 +24,18 @@ public class CompanyService {
      * Bir kullanıcı bu isteği attığında kendisi User konumundan artık bir şirket sahibi konumuna geçer.
      * Rolü Company_Owner olarak güncellenir ve Company ile ilişkilendirilir.
      *
-     * @param saveCompanyRequest
+     * @param request
      * @return
      */
+    @Transactional
     public Company createCompany(
-            SaveCompanyRequest saveCompanyRequest,
-            User user
-    ){
-        if(companyRepository.existsByTitle(saveCompanyRequest.getTitle())){
-           throw new RuntimeException("There is already a company with same title!");
+            CompanySaveRequest request,
+            User user) {
+        if (companyRepository.existsByTitle(request.getTitle())) {
+            throw new RuntimeException("There is already a company with same title!");
         }
 
-        final Company companyEntityToBeSave
-                = SaveCompanyRequestToCompany.toCompany(saveCompanyRequest,user);
+        final Company companyEntityToBeSave = CompanyMapper.mapForSaving(request, user);
 
         final Company savedCompanyEntity = companyRepository.save(companyEntityToBeSave);
 
@@ -59,35 +54,77 @@ public class CompanyService {
      *
      * @return
      */
-    public List<Company> getAllCompany(
-    ){
+    public List<Company> getAllCompany() {
         return companyRepository.findAll();
     }
 
 
-    public Company getOneCompanyById(
-            Long id
-    ) {
-        return companyRepository
-                .findById(id)
-                .orElseThrow(()->new RuntimeException("Company not found:"+ id));
+    public Company getOneCompanyById(Long id) {
+        return companyRepository.findById(id).orElseThrow(() -> new RuntimeException("Company not found:" + id));
     }
 
 
+    /**
+     * ID değeri belirtilen {@link Company} entity nesnesini verilen
+     * {@link CompanyUpdateRequest} request DTO nesnesini kullanarak günceller
+     * ve geriye güncellenmiş olan {@link Company} entity nesnesini döner.
+     *
+     * @param id
+     * @param request
+     * @return
+     */
+    public Company updateCompanyById(Long id, CompanyUpdateRequest request, User user) {
 
+        Company company = companyRepository.findById(id).orElseThrow(() -> new RuntimeException("Can't find a Company with given id: " + id));
 
-    public Company updateCompanyById(Long id, UpdateCompanyRequest request) {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Can't find a Company with given id: "+id));
+        if(!user.getCompany().getId().equals(id))
+            throw new RuntimeException("Aga nereye erişiyon?");
 
-        company.setTitle(request.getTitle());
-        company.setStatus(request.getStatus());
+        CompanyMapper.mapForUpdating(company, request, user);
 
         return companyRepository.save(company);
 
     }
 
-    public void deleteCompanyById(Long id) {
-        companyRepository.deleteById(id);
+    /**
+     * ID değeri belirtilen {@link Company} nesnesini silmek için kullanılan metoddur.
+     *
+     * @param id
+     */
+    @Transactional
+    public void deleteCompanyById(
+            Long id,
+            User ownerUser
+    ) {
+
+
+        Company companyEntityToDelete = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Böyle bir company bulunamadı."));
+
+        if(!companyEntityToDelete.getId().equals(ownerUser.getCompany().getId())){
+            // TODO : Bu lisanı düzelt
+
+            throw new RuntimeException("Aga sen nereye erişiyorsun!");
+        }
+
+        List<User> subUserEntitiesToDelete = companyEntityToDelete.getUsers();
+        companyEntityToDelete.setUsers(null);
+
+        subUserEntitiesToDelete.stream()
+                .filter(user -> user.getRole().equals(Role.COMPANY_USER))
+                .forEach(user ->
+                {
+                    user.setCompany(null);
+                    userRepository.delete(user);
+                });
+
+
+
+        ownerUser.setRole(Role.USER);
+        ownerUser.setCompany(null);
+
+        userRepository.save(ownerUser);
+
+        companyRepository.delete(companyEntityToDelete);
     }
 }
