@@ -3,7 +3,6 @@ package com.smartIq.vehicledealership.vehicledealership.User.Service;
 import com.smartIq.vehicledealership.vehicledealership.Company.payload.request.SubUserCreateRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.Repository.TokenRepository;
 import com.smartIq.vehicledealership.vehicledealership.User.Repository.UserRepository;
-import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.Token;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
 import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserMapper;
@@ -62,7 +61,7 @@ public class UserAuthService {
             throw new RuntimeException("email is already exist"+ request.getEmail());
         }
 
-        User userEntityToBeSave = UserMapper.mapForSaving(request,passwordEncoder,creatorUser);
+        User userEntityToBeSave = UserMapper.mapForSubUserSaving(request,passwordEncoder,creatorUser);
 
         return userRepository.save(userEntityToBeSave);
 

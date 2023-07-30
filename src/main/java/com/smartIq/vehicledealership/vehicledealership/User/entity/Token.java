@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Data
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -26,8 +25,7 @@ public class Token extends BaseEntity {
     private LocalDateTime expiration = LocalDateTime.now().plusHours(8);
 
     @OneToOne(
-            mappedBy = "token",
-            fetch = FetchType.LAZY
+            mappedBy = "token"
     )
     private User user;
 

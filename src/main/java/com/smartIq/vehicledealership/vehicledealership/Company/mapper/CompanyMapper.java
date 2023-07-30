@@ -30,7 +30,7 @@ public class CompanyMapper {
     ){
         return Company.builder()
                 .title(request.getTitle())
-                .status(Status.ACTIVE)
+                .companyStatus(Status.ACTIVE)
                 .createdAt(LocalDateTime.now())
                 .createdBy(user.getId())
                 .build();
@@ -43,7 +43,7 @@ public class CompanyMapper {
             User user
     ){
         company.setTitle(request.getTitle());
-        company.setStatus(request.getStatus());
+        company.setCompanyStatus(request.getStatus());
 
         company.setUpdatedAt(LocalDateTime.now());
         company.setUpdatedBy(user.getId());

@@ -9,8 +9,7 @@ import com.smartIq.vehicledealership.vehicledealership.User.Service.UserAuthServ
 import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
 import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserMapper;
-import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserRegisterRequest;
-import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserRegisteredResponse;
+import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserAuthenticatedResponse;
 import com.smartIq.vehicledealership.vehicledealership.common.authorizationChecker.AuthorizationChecker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +41,14 @@ public class CompanySubUserController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<UserRegisteredResponse> createSubUser(
+    public ResponseEntity<UserAuthenticatedResponse> createSubUser(
             @RequestHeader("token") String tokenCode,
             @RequestBody SubUserCreateRequest request
     ) {
         final User requestOwner = authorizationChecker.authorize(tokenCode, Role.COMPANY_OWNER);
 
         final User registeredSubUser = userAuthService.createSubUser(request, requestOwner);
-        final UserRegisteredResponse registeredSubUserResponse = UserMapper.entityToResponse(registeredSubUser);
+        final UserAuthenticatedResponse registeredSubUserResponse = UserMapper.toAuthenticatedResponse(registeredSubUser);
 
         return ResponseEntity.ok(registeredSubUserResponse);
     }

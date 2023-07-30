@@ -1,10 +1,11 @@
 package com.smartIq.vehicledealership.vehicledealership.User.controller;
 
 import com.smartIq.vehicledealership.vehicledealership.User.Service.UserAuthService;
+import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserAuthenticateRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserRegisterRequest;
 import com.smartIq.vehicledealership.vehicledealership.User.mapper.UserMapper;
-import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserRegisteredResponse;
+import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserAuthenticatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,11 +33,12 @@ public class UserAuthController {
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(
+    public ResponseEntity<UserAuthenticatedResponse> register(
             @RequestBody UserRegisterRequest request
     ) {
 
-        UserRegisteredResponse response = UserMapper.entityToResponse(userAuthService.register(request));
+        final UserAuthenticatedResponse response = UserMapper
+                .toAuthenticatedResponse(userAuthService.register(request));
 
         return ResponseEntity.ok(response);
 
@@ -45,17 +47,18 @@ public class UserAuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(
             @RequestBody UserAuthenticateRequest request
-            ){
-       return ResponseEntity.ok(userAuthService.authenticate(request));
+    ){
+        final User userLoggedIn = userAuthService.authenticate(request);
+        final UserAuthenticatedResponse userAuthenticatedResponse = UserMapper
+                .toAuthenticatedResponse(userLoggedIn);
+
+       return ResponseEntity.ok(userAuthenticatedResponse);
 
     }
 
     @PostMapping("/logout")
     public void logout(@RequestBody UserAuthenticateRequest request){
-
         userAuthService.logout(request);
-
-
     }
 
 

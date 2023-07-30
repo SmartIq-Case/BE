@@ -8,7 +8,7 @@ public class CompanyToUpdateCompanyResponseMapper {
 
         return UpdateCompanyResponse.builder()
                 .title(company.getTitle())
-                .status(company.getStatus())
+                .status(company.getCompanyStatus())
                 .build();
     }
 }

@@ -8,7 +8,7 @@ public class UpdateCompanyRequestToCompany {
         return Company.builder()
                 .id(id)
                 .title(request.getTitle())
-                .status(request.getStatus())
+                .companyStatus(request.getStatus())
                 .build();
 
     }

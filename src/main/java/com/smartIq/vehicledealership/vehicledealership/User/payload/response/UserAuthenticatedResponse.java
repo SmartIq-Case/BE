@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisteredResponse {
-    private Long id;
+public class UserAuthenticatedResponse {
     private String token;
 }

@@ -5,7 +5,7 @@ import com.smartIq.vehicledealership.vehicledealership.User.entity.Role;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.Token;
 import com.smartIq.vehicledealership.vehicledealership.User.entity.User;
 import com.smartIq.vehicledealership.vehicledealership.User.payload.request.UserRegisterRequest;
-import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserRegisteredResponse;
+import com.smartIq.vehicledealership.vehicledealership.User.payload.response.UserAuthenticatedResponse;
 import com.smartIq.vehicledealership.vehicledealership.common.util.PasswordEncoder;
 import com.smartIq.vehicledealership.vehicledealership.common.util.TokenGenerator;
 
@@ -33,7 +33,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static User mapForSaving(
+    public static User mapForSubUserSaving(
             SubUserCreateRequest request,
             PasswordEncoder passwordEncoder,
             User creatorUser
@@ -53,21 +53,19 @@ public class UserMapper {
                 .build();
     }
 
-    public static UserRegisteredResponse entityToResponse(
+    public static UserAuthenticatedResponse toAuthenticatedResponse(
             User user
     ){
-        return UserRegisteredResponse.builder()
-                .id(user.getId())
+        return UserAuthenticatedResponse.builder()
                 .token(user.getToken().getTokenCode())
                 .build();
     }
 
-    public static UserRegisteredResponse toSubUserRegisteredResponse(
+    public static UserAuthenticatedResponse toSubUserRegisteredResponse(
             User creatorUser,
             User createdSubUser
     ){
-        return UserRegisteredResponse.builder()
-                .id(createdSubUser.getId())
+        return UserAuthenticatedResponse.builder()
                 .token(createdSubUser.getToken().getTokenCode())
                 .build();
     }

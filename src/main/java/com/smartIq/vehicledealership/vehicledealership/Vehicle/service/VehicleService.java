@@ -1,3 +1,5 @@
+
+/*
 package com.smartIq.vehicledealership.vehicledealership.Vehicle.service;
 
 import com.smartIq.vehicledealership.vehicledealership.Company.service.CompanyService;
@@ -59,3 +61,4 @@ public class VehicleService {
         vehicleRepository.deleteById(id);
     }
 }
+*/

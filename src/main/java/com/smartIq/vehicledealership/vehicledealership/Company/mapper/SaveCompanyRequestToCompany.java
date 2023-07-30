@@ -15,7 +15,7 @@ public class SaveCompanyRequestToCompany {
     ){
         return Company.builder()
                 .title(saveCompanyRequest.getTitle())
-                .status(Status.ACTIVE)
+                .companyStatus(Status.ACTIVE)
                 .createdAt(LocalDateTime.now())
                 .createdBy(user.getId())
                 .build();
